@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tab } from '../types';
-import { ProfileIcon, WatchAdIcon, ConvertIcon, WithdrawIcon } from './icons/NavIcons';
+import { ProfileIcon, WatchAdIcon, ConvertIcon, WithdrawIcon, WalletIcon } from './icons/NavIcons';
 import { playSound } from '../utils/sounds';
 
 interface BottomNavProps {
@@ -24,7 +24,7 @@ const NavItem: React.FC<{
         playSound('click');
         onClick();
       }}
-      className="flex flex-col items-center justify-center w-1/4 h-full transition-all duration-300 ease-in-out relative"
+      className="flex flex-col items-center justify-center w-1/5 h-full transition-all duration-300 ease-in-out relative"
       aria-label={label}
     >
       <div className={`w-7 h-7 mb-1 transition-all duration-300 ${isActive ? activeClasses : inactiveClasses} ${isActive ? 'scale-110' : ''}`}>{icon}</div>
@@ -50,6 +50,13 @@ const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab }) => {
         icon={<WatchAdIcon />}
         isActive={activeTab === Tab.Watch}
         onClick={() => setActiveTab(Tab.Watch)}
+      />
+       <NavItem
+        tab={Tab.Wallet}
+        label="المحفظة"
+        icon={<WalletIcon />}
+        isActive={activeTab === Tab.Wallet}
+        onClick={() => setActiveTab(Tab.Wallet)}
       />
       <NavItem
         tab={Tab.Convert}

@@ -4,12 +4,19 @@ import { playSound } from '../../utils/sounds';
 interface WithdrawScreenProps {
   diggsBalance: number;
   onWithdraw: (amount: number, address: string) => void;
+  walletAddress?: string;
 }
 
-const WithdrawScreen: React.FC<WithdrawScreenProps> = ({ diggsBalance, onWithdraw }) => {
+const WithdrawScreen: React.FC<WithdrawScreenProps> = ({ diggsBalance, onWithdraw, walletAddress }) => {
   const [amount, setAmount] = useState('');
   const [address, setAddress] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+      if (walletAddress) {
+          setAddress(walletAddress);
+      }
+  }, [walletAddress]);
 
   useEffect(() => {
     if (amount === '') {
@@ -32,7 +39,6 @@ const WithdrawScreen: React.FC<WithdrawScreenProps> = ({ diggsBalance, onWithdra
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Allow numbers and one decimal point
     if (/^\d*\.?\d*$/.test(value)) {
         setAmount(value);
     }
@@ -44,7 +50,7 @@ const WithdrawScreen: React.FC<WithdrawScreenProps> = ({ diggsBalance, onWithdra
     if (!error && !isNaN(numericAmount) && numericAmount > 0 && address.trim() !== '') {
       onWithdraw(numericAmount, address);
       setAmount('');
-      setAddress('');
+      setAddress(walletAddress || '');
     } else {
       playSound('error');
     }
@@ -77,10 +83,12 @@ const WithdrawScreen: React.FC<WithdrawScreenProps> = ({ diggsBalance, onWithdra
               id="address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="0x..."
+              placeholder="0x... or connect wallet"
               className="w-full p-4 text-lg bg-white/80 dark:bg-gray-700/80 border-2 border-transparent focus:border-watermelon-red focus:ring-0 rounded-lg transition-colors"
               required
+              readOnly={!!walletAddress}
             />
+             {walletAddress && <p className="text-xs text-telegram-hint mt-1">تمت تعبئة العنوان من المحفظة المتصلة.</p>}
           </div>
 
           <div>

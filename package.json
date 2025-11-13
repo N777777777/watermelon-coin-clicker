@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "react": "^19.2.0",
+    "@tonconnect/ui-react": "2.0.5",
+    "buffer": "6.0.3",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {

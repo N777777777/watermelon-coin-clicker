@@ -4,6 +4,7 @@ export enum Tab {
   Watch = 'WATCH',
   Convert = 'CONVERT',
   Withdraw = 'WITHDRAW',
+  Wallet = 'WALLET',
 }
 
 export interface TelegramUser {
