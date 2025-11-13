@@ -10,30 +10,56 @@ interface WatchAdScreenProps {
 const WatchAdScreen: React.FC<WatchAdScreenProps> = ({ onAdWatched, showFeedback }) => {
   const [isAdLoading, setIsAdLoading] = useState(false);
 
+  // Fallback ad provider: Telegram's Rewarded Video
+  const showTelegramAd = () => {
+    if (window.Telegram?.WebApp?.showRewardedVideo) {
+      window.Telegram.WebApp.showRewardedVideo({
+        onAdViewed: () => {
+          onAdWatched();
+          setIsAdLoading(false);
+        },
+        onError: (err) => {
+          console.error("Telegram Ad Error:", err);
+          showFeedback('Failed to load ad. Please try again later.', 'error');
+          setIsAdLoading(false);
+        },
+      });
+    } else {
+      // Fallback for development/testing outside of Telegram
+      console.log("Ad APIs not found. Simulating ad for 2 seconds.");
+      setTimeout(() => {
+        onAdWatched();
+        setIsAdLoading(false);
+      }, 2000);
+    }
+  };
+
   const handleWatchAd = () => {
     playSound('click');
     setIsAdLoading(true);
 
     try {
-      if (window.Telegram?.WebApp?.showRewardedVideo) {
-        window.Telegram.WebApp.showRewardedVideo({
-          onAdViewed: () => {
-            onAdWatched(); // This already shows a success message via App.tsx
+      // Prioritize Adsgram if available
+      if (window.adsgram) {
+        window.adsgram.showReward({
+          onReward: () => {
+            console.log('Adsgram: Rewarded');
+            onAdWatched();
+          },
+          onClose: () => {
+            console.log('Adsgram: Ad closed');
+            // This is called whether rewarded or not, so it's a safe place to stop loading.
             setIsAdLoading(false);
           },
           onError: (err) => {
-            console.error("Telegram Ad Error:", err);
-            showFeedback('Failed to load ad. Please try again later.', 'error');
-            setIsAdLoading(false);
+            console.error("Adsgram Ad Error:", err);
+            // Fallback to Telegram ads if Adsgram fails
+            showTelegramAd();
           },
         });
       } else {
-        // Fallback for development/testing outside Telegram
-        console.log("Telegram Ad API not found. Simulating ad for 2 seconds.");
-        setTimeout(() => {
-          onAdWatched();
-          setIsAdLoading(false);
-        }, 2000);
+        // If Adsgram SDK is not present, go directly to Telegram ads
+        showTelegramAd();
       }
     } catch (error) {
         console.error("Error trying to show ad:", error);

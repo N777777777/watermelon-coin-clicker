@@ -63,6 +63,15 @@ function App() {
       
       setUser(currentUser);
 
+      // Initialize Adsgram SDK after other initializations
+      if (window.adsgram) {
+        // IMPORTANT: Replace 'YOUR_ADSGRAM_BLOCK_ID' with your actual Adsgram Block ID.
+        window.adsgram.init({ blockId: 'YOUR_ADSGRAM_BLOCK_ID' });
+        console.log("Adsgram SDK Initialized.");
+      } else {
+        console.warn("Adsgram SDK not found. Ads will fallback to Telegram's service.");
+      }
+
       // Now load data based on the identified user
       if (currentUser) {
         const storageKey = `watermelon_coin_data_${currentUser.id}`;

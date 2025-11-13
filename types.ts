@@ -35,5 +35,13 @@ declare global {
         openTelegramLink?: (url: string) => void;
       };
     };
+    adsgram?: {
+      init: (options: { blockId: string }) => void;
+      showReward: (callbacks: {
+        onReward: () => void;
+        onClose: () => void;
+        onError: (error: any) => void;
+      }) => void;
+    };
   }
 }
