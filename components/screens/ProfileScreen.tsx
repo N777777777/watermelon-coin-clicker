@@ -22,7 +22,9 @@ const StatCard: React.FC<{ label: string; value: string | number; icon: string; 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, watermelonBalance, diggsBalance, adsWatched, showFeedback }) => {
   if (!user) return null;
 
-  const referralLink = `${window.location.origin}${window.location.pathname}?ref=${user.id}`;
+  // IMPORTANT: Replace 'WatermelonCoinClickerBot' with your actual Telegram bot username.
+  const botUsername = 'WatermelonCoinClickerBot';
+  const referralLink = `https://t.me/${botUsername}?startapp=ref_${user.id}`;
   
   const handleShare = () => {
     playSound('click');

@@ -22,6 +22,7 @@ declare global {
         ready: () => void;
         initDataUnsafe?: {
           user?: TelegramUser;
+          start_param?: string;
         };
         themeParams: {
           bg_color?: string;

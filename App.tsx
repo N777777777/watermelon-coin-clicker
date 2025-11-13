@@ -85,24 +85,38 @@ function App() {
     initializeUserAndData();
   }, []);
   
-    // Effect to check for referral link after data is loaded
+  // Effect to check for referral link after data is loaded
   useEffect(() => {
     if (!isDataLoaded || !user) return;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const refId = urlParams.get('ref');
+    // Check for Telegram start_param first for referral
+    const tgStartParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+    let refId: string | null = null;
 
+    if (tgStartParam && tgStartParam.startsWith('ref_')) {
+      refId = tgStartParam.substring(4);
+    } else {
+      // Fallback to URL param for development/testing
+      const urlParams = new URLSearchParams(window.location.search);
+      refId = urlParams.get('ref');
+    }
+    
     if (refId) {
-        // A simple flag to ensure we only show this once per session
-        const referralMessageShown = sessionStorage.getItem('referralMessageShown');
-
-        if (!referralMessageShown) {
-            console.log(`User was referred by ID: ${refId}`);
-            showFeedback(`Welcome! Thanks for joining via a friend's invite.`, 'success');
-            sessionStorage.setItem('referralMessageShown', 'true');
-            // Clean the URL to avoid re-triggering this logic on refresh
-            window.history.replaceState({}, document.title, window.location.pathname);
+      const referralMessageShown = sessionStorage.getItem('referralMessageShown');
+      
+      if (!referralMessageShown) {
+        // Don't show welcome message for self-referral
+        if (String(user.id) !== refId) {
+          console.log(`User was referred by ID: ${refId}`);
+          showFeedback(`Welcome! Thanks for joining via a friend's invite.`, 'success');
         }
+        sessionStorage.setItem('referralMessageShown', 'true');
+      }
+
+      // Clean the URL search params to avoid re-triggering on refresh, only if they exist.
+      if (window.location.search) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
     }
   }, [isDataLoaded, user, showFeedback]);
 
